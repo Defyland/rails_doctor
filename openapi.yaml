@@ -1,0 +1,6 @@
+openapi: 3.1.0
+info:
+  title: RailsDoctor
+  version: 0.1.0
+  description: RailsDoctor exposes no HTTP API. Its public API is the Ruby DSL and Rails command interface.
+paths: {}

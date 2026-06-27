@@ -1,0 +1,18 @@
+default:
+  exclude_checks:
+    - mailer.default_url_options_missing
+
+production:
+  suppressions:
+    - check_id: rails.cookies.same_site_not_strict
+      because: This API-only service does not rely on browser cookies in production behind the gateway
+      owner: api-platform@example.com
+      expires_on: 2027-12-31
+    - check_id: rails.session.cookie_flags_weak
+      because: This API-only service does not rely on browser session cookies in production
+      owner: api-platform@example.com
+      expires_on: 2027-12-31
+    - check_id: assets.production_build_missing
+      because: This API-only service serves no compiled frontend assets
+      owner: api-platform@example.com
+      expires_on: 2027-12-31

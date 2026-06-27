@@ -1,0 +1,70 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+root = File.expand_path("..", __dir__)
+$LOAD_PATH.unshift File.join(root, "lib")
+$LOAD_PATH.unshift File.join(root, "test")
+
+require "json"
+require "support/integration_app_harness"
+
+class BenchmarkRunner
+  include IntegrationAppHarness
+
+  def call(runs:)
+    with_integration_app do |app_root|
+      Dir.chdir(app_root) do
+        ENV["RAILS_ENV"] = "production"
+        require_relative_file(app_root.join("config/environment"))
+
+        runner = RailsDoctor::Runner.new
+        application = Rails.application
+
+        # Warm boot is intentionally excluded from the measured loop.
+        runner.call(application: application, environment: "production", format: "json")
+
+        samples = Array.new(runs) do
+          started_at = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+          runner.call(application: application, environment: "production", format: "json")
+          finished_at = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+
+          (finished_at - started_at) * 1000.0
+        end
+
+        report(
+          runs: runs,
+          samples: samples,
+          checks: RailsDoctor.registry.size
+        )
+      end
+    end
+  end
+
+  private
+
+  def require_relative_file(pathname)
+    require pathname.to_s
+  end
+
+  def percentile(values, fraction)
+    index = (values.length * fraction).ceil - 1
+    values.fetch([index, 0].max)
+  end
+
+  def report(runs:, samples:, checks:)
+    ordered = samples.sort
+    payload = {
+      runs: runs,
+      checks: checks,
+      ruby_version: RUBY_VERSION,
+      median_ms: ordered[ordered.length / 2].round(3),
+      p95_ms: percentile(ordered, 0.95).round(3),
+      max_ms: ordered.last.round(3)
+    }
+
+    puts JSON.pretty_generate(payload)
+  end
+end
+
+runs = Integer(ENV.fetch("RUNS", "100"))
+BenchmarkRunner.new.call(runs: runs)

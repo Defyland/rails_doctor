@@ -1,0 +1,18 @@
+default:
+  required_env:
+    - DATABASE_URL
+
+production:
+  command_hooks:
+    - command: assets:precompile
+      fail_on: medium
+      only_checks:
+        - assets.production_build_missing
+        - rails.secrets.required_environment_missing
+  redacted_patterns:
+    - cdn-token-
+  suppressions:
+    - check_id: assets.production_build_missing
+      because: Assets are compiled in a separate pipeline and published to a versioned CDN manifest
+      owner: frontend-platform@example.com
+      expires_on: 2027-12-31

@@ -1,0 +1,21 @@
+default:
+  required_env:
+    - DATABASE_URL
+
+production:
+  command_hooks:
+    - command: server
+      fail_on: high
+      only_checks:
+        - rails.production.force_ssl_disabled
+        - rails.secrets.required_environment_missing
+    - command: db:prepare
+      fail_on: high
+      only_checks:
+        - rails.secrets.required_environment_missing
+        - database.pool.too_small
+  suppressions:
+    - check_id: rails.production.force_ssl_disabled
+      because: HTTPS is terminated and enforced by the ingress tier before requests reach Rails
+      owner: platform@example.com
+      expires_on: 2027-12-31

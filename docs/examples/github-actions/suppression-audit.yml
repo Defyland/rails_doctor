@@ -1,0 +1,23 @@
+name: RailsDoctor Suppression Audit
+
+"on":
+  schedule:
+    - cron: "0 9 * * 1"
+  workflow_dispatch:
+
+jobs:
+  suppression-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+          bundler-cache: true
+      - run: mkdir -p tmp
+      - run: bin/rails doctor --environment=production --report=suppressions --format=github-actions
+      - run: bin/rails doctor --environment=production --report=suppressions --format=json > tmp/rails_doctor_suppressions.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rails-doctor-suppressions
+          path: tmp/rails_doctor_suppressions.json
