@@ -1,5 +1,4 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-system("bundle exec rake test") or exit(false)
-system("bundle exec standardrb") or exit(false)
+system("bundle exec rake verify") or exit(false)

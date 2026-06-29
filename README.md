@@ -351,6 +351,25 @@ evidence, such as URL credentials, `token=...`, `password=...`, or
 JSON output. Rails `config.filter_parameters` is also reused as contextual key
 redaction for structured evidence at render time.
 
+## Contract And Versioning
+
+RailsDoctor's public contract is larger than one Ruby API. Reviewers and
+automation should expect these surfaces to stay intentional:
+
+- stable check IDs such as `database.pool.too_small`;
+- the severity and status vocabulary rendered by text, JSON, and GitHub Actions
+  output;
+- the `bin/rails doctor` and `bin/rails doctor --report=suppressions` command
+  surfaces;
+- the documented configuration keys under `config.x.rails_doctor` and
+  `config/rails_doctor.yml`.
+
+The concrete release policy for those surfaces lives in
+[docs/contract-versioning.md](docs/contract-versioning.md). The verification
+suite now builds the gem artifact, validates the packaged public docs, and boots
+a disposable Rails app that executes `bin/rails doctor` from the built gem so
+release readiness is proven from the package, not only from the checkout.
+
 ## Architecture Overview
 
 RailsDoctor is intentionally small:
@@ -410,10 +429,9 @@ that executes the real `bin/rails doctor` command in tests.
 Run:
 
 ```bash
+bundle exec rake verify
 bundle exec appraisal install
-bundle exec rake test
 bundle exec appraisal rake test
-bundle exec standardrb
 ```
 
 The generated `gemfiles/*.gemfile` and their lockfiles are part of the

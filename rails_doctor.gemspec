@@ -14,14 +14,17 @@ Gem::Specification.new do |spec|
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.2"
 
+  spec.metadata["allowed_push_host"] = "https://rubygems.org"
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = spec.homepage
   spec.metadata["bug_tracker_uri"] = "#{spec.homepage}/issues"
-  spec.metadata["documentation_uri"] = spec.homepage
+  spec.metadata["documentation_uri"] = "#{spec.homepage}#readme"
   spec.metadata["changelog_uri"] = "#{spec.homepage}/releases"
   spec.metadata["rubygems_mfa_required"] = "true"
 
-  spec.files = Dir["README.md", "LICENSE.txt", "lib/**/*.rb"].sort
+  spec.files = Dir["README.md", "LICENSE.txt", "docs/contract-versioning.md", "lib/**/*.rb"].sort.reject do |file|
+    file.start_with?("lib/rails_doctor/package_audit")
+  end
   spec.require_paths = ["lib"]
 
   spec.add_dependency "railties", ">= 7.1", "< 9.0"
