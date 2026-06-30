@@ -26,6 +26,9 @@ before deploy.
 
 The engineering case study is documented in
 [docs/engineering-case-study.md](docs/engineering-case-study.md).
+The high-level architecture summary lives in
+[docs/architecture/overview.md](docs/architecture/overview.md), and the core
+framework decisions live under [docs/adr/](docs/adr/).
 
 ## Target Users
 
@@ -441,16 +444,25 @@ compatibility evidence for the supported Rails matrix.
 
 ```bash
 bundle install
+bundle exec rake verify
+bundle exec rake build
+ruby -e 'require "rubygems/package"; puts Gem::Package.new(Dir["pkg/rails_doctor-*.gem"].fetch(0)).contents.grep(%r{^(README\\.md|docs/(contract-versioning|engineering-case-study|architecture/overview|adr/))})'
 bundle exec rake test
 bundle exec standardrb
 bundle exec appraisal rake test
-bundle exec rake build
-ruby -e 'require "rubygems/package"; puts Gem::Package.new("pkg/rails_doctor-0.1.0.gem").spec.files'
 RUNS=10 ruby bin/benchmark
 ```
 
 Expected evidence:
 
+- `bundle exec rake verify` passes the local suite, lint, and built-gem
+  package verification.
+- The built gem includes `README.md`,
+  `docs/contract-versioning.md`,
+  `docs/engineering-case-study.md`,
+  `docs/architecture/overview.md`, and the ADR set under `docs/adr/`, so the
+  release artifact carries the core review material instead of leaving it only
+  in the checkout.
 - The unit and integration suite passes on the active Ruby.
 - Standard Ruby reports no lint offenses.
 - Appraisal passes against Rails 7.1, 7.2, 8.0, and 8.1.

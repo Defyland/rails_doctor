@@ -22,7 +22,15 @@ Gem::Specification.new do |spec|
   spec.metadata["changelog_uri"] = "#{spec.homepage}/releases"
   spec.metadata["rubygems_mfa_required"] = "true"
 
-  spec.files = Dir["README.md", "LICENSE.txt", "docs/contract-versioning.md", "lib/**/*.rb"].sort.reject do |file|
+  spec.files = Dir[
+    "README.md",
+    "LICENSE.txt",
+    "docs/contract-versioning.md",
+    "docs/engineering-case-study.md",
+    "docs/architecture/overview.md",
+    "docs/adr/*.md",
+    "lib/**/*.rb"
+  ].sort.reject do |file|
     file.start_with?("lib/rails_doctor/package_audit")
   end
   spec.require_paths = ["lib"]

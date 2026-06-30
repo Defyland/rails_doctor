@@ -12,7 +12,16 @@ require_relative "package_audit/host_app_smoke"
 
 module RailsDoctor
   module PackageAudit
-    PUBLIC_DOCS = %w[README.md docs/contract-versioning.md].freeze
+    PUBLIC_DOCS = %w[
+      README.md
+      docs/contract-versioning.md
+      docs/engineering-case-study.md
+      docs/architecture/overview.md
+      docs/adr/0001-use-railties-command-integration.md
+      docs/adr/0002-keep-checks-as-ruby-dsl.md
+      docs/adr/0003-use-context-as-inspection-boundary.md
+      docs/adr/0004-ship-core-review-docs-in-built-gem.md
+    ].freeze
     ABSOLUTE_LOCAL_LINK_PATTERN = %r{\(/Users/}
 
     module_function
